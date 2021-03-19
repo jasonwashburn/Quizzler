@@ -20,8 +20,8 @@ class QuizInterface:
         self.score_label.grid(column=1, row=0, padx=20, pady=20)
 
         # Main Canvas
-        self.canvas = Canvas(width=300, height=250, highlightthickness=0)
-        self.question_text = self.canvas.create_text(150, 125, font=FONT, text="Some question text.", width=280)
+        self.canvas = Canvas(width=400, height=250, highlightthickness=0)
+        self.question_text = self.canvas.create_text(200, 125, font=FONT, text="Some question text.", width=380)
         self.canvas.grid(column=0, row=1, columnspan=2, padx=20, pady=20)
 
         # Buttons
@@ -48,7 +48,16 @@ class QuizInterface:
         self.give_feedback(is_right)
 
     def get_next_question(self):
-        q_text = self.quiz.next_question()
+        self.canvas.config(bg="white")
+        self.score_label.config(text=f"Score: {self.quiz.score}")
+        if self.quiz.question_number < 10:
+            q_text = self.quiz.next_question()
+        else:
+            q_text = f"You've reached the end of the quiz, you got {self.quiz.score} out of " \
+                     f"{len(self.quiz.question_list)} questions correct."
+            self.true_btn.config(state="disabled")
+            self.false_btn.config(state="disabled")
+
         self.canvas.itemconfig(self.question_text, text=q_text)
 
     def give_feedback(self, is_right: bool):
@@ -58,4 +67,4 @@ class QuizInterface:
         else:
             print("wrong")
             self.canvas.config(bg="red")
-        self.window.after(500, lambda: self.canvas.config(bg="white"))
+        self.window.after(500, self.get_next_question)
